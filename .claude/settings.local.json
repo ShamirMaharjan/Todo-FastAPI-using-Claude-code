@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Bash(python *)",
+      "Bash(ECC_GATEGUARD=off echo gate disabled *)",
+      "mcp__sqlite__read_query",
+      "Bash(Get-ChildItem -Path . -Recurse -Include \".mcp.json\", \"settings.json\", \"settings.local.json\" -ErrorAction SilentlyContinue; Get-ChildItem -Path . -Recurse -Include \"*.md\" -Filter \"CLAUDE*\" -ErrorAction SilentlyContinue)",
+      "Bash(Test-Path *)",
+      "Bash(Get-ChildItem *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\LOQ\\\\Claude Project\\\\fastapi-todo using claude code\\\\.claude\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object Name)",
+      "mcp__sqlite__list_tables",
+      "mcp__sqlite__describe_table",
+      "Bash(Write-Host \"---\")",
+      "Bash(Test -Path \"C:\\\\Users\\\\LOQ\\\\Claude Project\\\\fastapi-todo using claude code\\\\todos.db\" && Write-Host \"todos.db EXISTS\" || Write-Host \"todos.db does NOT exist\")",
+      "Bash(sqlite3 todos.db \"SELECT version_num FROM alembic_version;\")",
+      "Bash(sqlite3 todos.db \".schema tasks\")",
+      "Bash(pip show *)",
+      "Bash(alembic upgrade *)",
+      "Bash(sqlite3 todos.db \"SELECT id, title, priority, completed FROM tasks LIMIT 5;\")"
+    ]
+  }
+}
