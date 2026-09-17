@@ -27,7 +27,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support — import from the application's Base.
 from app.database import Base  # noqa: E402
-from app.models import Task  # noqa: E402  (ensures model is registered)
+from app.models import Task, User  # noqa: E402  (ensures models are registered)
 
 target_metadata = Base.metadata
 

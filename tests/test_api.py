@@ -333,6 +333,16 @@ class TestTaskValidation:
         assert response.status_code == 422
 
     @pytest.mark.asyncio
+    async def test_create_task_rejects_invalid_priority(
+        self, client: AsyncClient
+    ) -> None:
+        """POST /tasks with an invalid priority value should return 422."""
+        response = await client.post(
+            "/tasks/", json={"title": "Valid", "priority": "EXTREME"}
+        )
+        assert response.status_code == 422
+
+    @pytest.mark.asyncio
     async def test_update_task_rejects_unknown_field(
         self, client: AsyncClient
     ) -> None:

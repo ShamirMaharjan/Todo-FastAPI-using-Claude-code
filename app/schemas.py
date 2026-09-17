@@ -3,7 +3,33 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+from .models import TaskPriority
+
+
+class UserBase(BaseModel):
+    """Shared fields for user schemas."""
+
+    email: EmailStr
+
+
+class UserCreate(UserBase):
+    """Schema for creating a new user (request body)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    password: str = Field(..., min_length=8, description="The user's password")
+
+
+class UserResponse(UserBase):
+    """Schema for serializing a user in API responses."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    is_active: bool
+    created_at: datetime
 
 
 class TaskBase(BaseModel):
@@ -11,7 +37,7 @@ class TaskBase(BaseModel):
 
     title: str = Field(..., min_length=1, max_length=255, description="The title of the task")
     description: Optional[str] = Field(None, max_length=2000, description="Optional detailed description")
-    priority: Optional[str] = Field("MEDIUM", max_length=50, description="Task priority level")
+    priority: Optional[TaskPriority] = TaskPriority.MEDIUM
     completed: Optional[bool] = Field(False, description="Whether the task is completed")
 
 
@@ -31,7 +57,7 @@ class TaskUpdate(BaseModel):
 
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = Field(None, max_length=2000)
-    priority: Optional[str] = Field(None, max_length=50)
+    priority: Optional[TaskPriority] = None
     completed: Optional[bool] = None
 
 
@@ -42,3 +68,4 @@ class TaskResponse(TaskBase):
 
     id: int
     created_at: datetime
+    user_id: Optional[int] = None
