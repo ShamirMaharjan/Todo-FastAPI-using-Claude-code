@@ -32,6 +32,19 @@ class UserResponse(UserBase):
     created_at: datetime
 
 
+class Token(BaseModel):
+    """Schema for the JWT access-token response."""
+
+    access_token: str
+    token_type: str = "bearer"
+
+
+class TokenData(BaseModel):
+    """Schema for the decoded token payload."""
+
+    email: Optional[str] = None
+
+
 class TaskBase(BaseModel):
     """Shared fields for task create and update operations."""
 

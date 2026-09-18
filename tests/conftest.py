@@ -89,3 +89,37 @@ async def client(db_session) -> AsyncClient:
     ) as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture()
+async def auth_token(client: AsyncClient) -> str:
+    """Register and log in a test user, returning the JWT access token.
+
+    Depends on the ``client`` fixture so the same database session is
+    shared.  The token is fresh per test because ``clean_tables``
+    truncates the users table beforehand.
+    """
+    await client.post(
+        "/auth/register",
+        json={"email": "test@example.com", "password": "testpassword123"},
+    )
+    response = await client.post(
+        "/auth/login",
+        data={"username": "test@example.com", "password": "testpassword123"},
+    )
+    assert response.status_code == 200
+    return response.json()["access_token"]
+
+
+@pytest_asyncio.fixture()
+async def auth_headers(client: AsyncClient, auth_token: str) -> dict[str, str]:
+    """Return ``Authorization`` header dict for the authenticated test user."""
+    return {"Authorization": f"Bearer {auth_token}"}
+
+
+@pytest_asyncio.fixture()
+async def auth_client(client: AsyncClient, auth_token: str) -> AsyncClient:
+    """Provide the test client with the bearer token pre-set in default headers."""
+    client.headers.update({"Authorization": f"Bearer {auth_token}"})
+    yield client
+    client.headers.pop("Authorization", None)

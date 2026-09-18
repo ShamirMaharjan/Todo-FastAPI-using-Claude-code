@@ -10,7 +10,8 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query, status
 
-from ..dependencies import get_task_service
+from ..dependencies import get_current_user, get_task_service
+from ..models import User
 from ..schemas import TaskCreate, TaskResponse, TaskUpdate
 from ..services.task_service import TaskService
 
@@ -27,18 +28,20 @@ router = APIRouter(
 )
 async def create_task(
     task: TaskCreate,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> TaskResponse:
     """Create a new task item.
 
     Args:
         task: The task data to create.
+        current_user: The authenticated user (used for tenant isolation).
         service: The injected task service.
 
     Returns:
         The created task item.
     """
-    return await service.create_task(task)
+    return await service.create_task(task, current_user.id)
 
 
 @router.get("/", response_model=List[TaskResponse])
@@ -46,6 +49,7 @@ async def list_tasks(
     completed: Optional[bool] = None,
     limit: int = Query(default=100, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> List[TaskResponse]:
     """Retrieve a list of task items.
@@ -56,24 +60,29 @@ async def list_tasks(
             are returned.
         limit: Maximum number of tasks to return. Defaults to 100.
         offset: Number of tasks to skip. Defaults to 0.
+        current_user: The authenticated user (used for tenant isolation).
         service: The injected task service.
 
     Returns:
         A list of task items matching the filter criteria.
     """
-    tasks = await service.list_all(completed=completed, offset=offset, limit=limit)
+    tasks = await service.list_all(
+        current_user.id, completed=completed, offset=offset, limit=limit
+    )
     return [TaskResponse.model_validate(task) for task in tasks]
 
 
 @router.get("/{task_id}", response_model=TaskResponse)
 async def get_task(
     task_id: int,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> TaskResponse:
     """Retrieve a single task item by its ID.
 
     Args:
         task_id: The unique identifier of the task item.
+        current_user: The authenticated user (used for tenant isolation).
         service: The injected task service.
 
     Returns:
@@ -82,13 +91,14 @@ async def get_task(
     Raises:
         TaskNotFoundException: 404 if the task item does not exist.
     """
-    return await service.get_by_id(task_id)
+    return await service.get_by_id(task_id, current_user.id)
 
 
 @router.patch("/{task_id}", response_model=TaskResponse)
 async def update_task(
     task_id: int,
     task: TaskUpdate,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> TaskResponse:
     """Partially update a task item by its ID.
@@ -98,6 +108,7 @@ async def update_task(
     Args:
         task_id: The unique identifier of the task item.
         task: The partial task data to update.
+        current_user: The authenticated user (used for tenant isolation).
         service: The injected task service.
 
     Returns:
@@ -106,21 +117,23 @@ async def update_task(
     Raises:
         TaskNotFoundException: 404 if the task item does not exist.
     """
-    return await service.update_task(task_id, task)
+    return await service.update_task(task_id, task, current_user.id)
 
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(
     task_id: int,
+    current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
 ) -> None:
     """Delete a task item by its ID.
 
     Args:
         task_id: The unique identifier of the task item.
+        current_user: The authenticated user (used for tenant isolation).
         service: The injected task service.
 
     Raises:
         TaskNotFoundException: 404 if the task item does not exist.
     """
-    await service.delete_task(task_id)
+    await service.delete_task(task_id, current_user.id)

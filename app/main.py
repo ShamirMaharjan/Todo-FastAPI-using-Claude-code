@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from .database import Base, engine
-from .routers import task_router
+from .routers import auth_router, task_router
 from .services.task_service import TaskNotFoundException
 
 
@@ -31,6 +31,7 @@ app = FastAPI(
 )
 
 # Register routers
+app.include_router(auth_router)
 app.include_router(task_router)
 
 
