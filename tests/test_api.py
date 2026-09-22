@@ -366,7 +366,7 @@ class TestTaskValidation:
     async def test_update_task_rejects_unknown_field(
         self, auth_client: AsyncClient
     ) -> None:
-        """PATCH /tasks/{id} with an unknown field should return 422 (extra='forbid')."""
+        """PATCH /tasks/{id} with an unknown field returns 422 (extra='forbid')."""
         create_response = await auth_client.post("/tasks/", json={"title": "Test task"})
         task_id = create_response.json()["id"]
 

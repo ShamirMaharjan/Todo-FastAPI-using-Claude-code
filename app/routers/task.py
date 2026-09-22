@@ -6,7 +6,6 @@ HTTP responses.  It never imports ``AsyncSession`` or SQLAlchemy query
 primitives, enforcing strict layered separation.
 """
 
-
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import Query
@@ -94,7 +93,7 @@ async def get_task(
         The task item with the specified ID.
 
     Raises:
-        TaskNotFoundException: 404 if the task item does not exist.
+        TaskNotFoundError: 404 if the task item does not exist.
     """
     return await service.get_by_id(task_id, current_user.id)
 
@@ -120,7 +119,7 @@ async def update_task(
         The updated task item.
 
     Raises:
-        TaskNotFoundException: 404 if the task item does not exist.
+        TaskNotFoundError: 404 if the task item does not exist.
     """
     return await service.update_task(task_id, task, current_user.id)
 
@@ -139,6 +138,6 @@ async def delete_task(
         service: The injected task service.
 
     Raises:
-        TaskNotFoundException: 404 if the task item does not exist.
+        TaskNotFoundError: 404 if the task item does not exist.
     """
     await service.delete_task(task_id, current_user.id)

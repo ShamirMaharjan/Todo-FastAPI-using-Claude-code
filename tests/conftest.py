@@ -21,7 +21,8 @@ from app.main import app
 
 @pytest_asyncio.fixture(scope="session")
 async def test_engine():
-    """Create the async test engine with NullPool to avoid cross-event-loop
+    """Create the async test engine with NullPool to avoid cross-event-loop.
+
     connection issues. NullPool creates connections on-demand, so they are
     always bound to the current event loop rather than a stale one.
     """

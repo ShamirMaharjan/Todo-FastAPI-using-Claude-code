@@ -1,6 +1,5 @@
 """Task repository encapsulating all database access for Task objects."""
 
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,7 +36,9 @@ class TaskRepository:
         offset: int = 0,
         limit: int = 100,
     ) -> list[Task]:
-        """Retrieve tasks owned by *user_id* with optional completed filter, offset, and limit.
+        """Retrieve tasks owned by *user_id* with optional completed filter.
+
+        offset, and limit.
 
         Args:
             user_id: The ID of the user whose tasks to retrieve.
@@ -56,7 +57,9 @@ class TaskRepository:
         return list(result.scalars().all())
 
     async def create(self, schema: TaskCreate, user_id: int) -> Task:
-        """Create a new task owned by *user_id* from the schema and return the created task.
+        """Create a new task owned by *user_id* from the schema.
+
+        Return the created task.
 
         Args:
             schema: The task creation data.

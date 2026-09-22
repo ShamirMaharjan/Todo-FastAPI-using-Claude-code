@@ -4,7 +4,6 @@ Follows the same async repository pattern as ``TaskRepository``,
 encapsulating all SQLAlchemy access for the ``User`` model.
 """
 
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

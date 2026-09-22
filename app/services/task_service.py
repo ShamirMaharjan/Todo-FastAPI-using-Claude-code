@@ -1,13 +1,12 @@
 """Service layer for task business logic."""
 
-
 from ..models import Task
 from ..repositories.task_repository import TaskRepository
 from ..schemas import TaskCreate
 from ..schemas import TaskUpdate
 
 
-class TaskNotFoundException(Exception):
+class TaskNotFoundError(Exception):
     """Raised when a task with the specified ID does not exist."""
 
     def __init__(self, task_id: int) -> None:
@@ -36,12 +35,12 @@ class TaskService:
             The task if found and owned by *user_id*.
 
         Raises:
-            TaskNotFoundException: If the task does not exist or does not
+            TaskNotFoundError: If the task does not exist or does not
                 belong to *user_id*.
         """
         task = await self.repo.get_by_id(task_id, user_id)
         if task is None:
-            raise TaskNotFoundException(task_id)
+            raise TaskNotFoundError(task_id)
         return task
 
     async def list_all(
@@ -90,7 +89,7 @@ class TaskService:
             The updated task.
 
         Raises:
-            TaskNotFoundException: If the task does not exist.
+            TaskNotFoundError: If the task does not exist.
         """
         task = await self.get_by_id(task_id, user_id)
         return await self.repo.update(task, schema, user_id)
@@ -103,7 +102,7 @@ class TaskService:
             user_id: The ID of the user who owns the task (for tenant scoping).
 
         Raises:
-            TaskNotFoundException: If the task does not exist.
+            TaskNotFoundError: If the task does not exist.
         """
         task = await self.get_by_id(task_id, user_id)
         await self.repo.delete(task, user_id)

@@ -18,7 +18,7 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 
-class TaskPriority(str, enum.Enum):
+class TaskPriority(enum.StrEnum):
     """Priority levels for tasks."""
 
     LOW = "LOW"

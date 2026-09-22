@@ -12,7 +12,7 @@ from .database import Base
 from .database import engine
 from .routers import auth_router
 from .routers import task_router
-from .services.task_service import TaskNotFoundException
+from .services.task_service import TaskNotFoundError
 
 
 @asynccontextmanager
@@ -29,7 +29,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title="FastAPI Todo",
-    description="A simple Todo API built with FastAPI, async SQLAlchemy, and PostgreSQL.",
+    description="A simple Todo API built with FastAPI, async SQLAlchemy, "
+    "and PostgreSQL.",
     version="0.1.0",
     lifespan=lifespan,
 )
@@ -39,11 +40,11 @@ app.include_router(auth_router)
 app.include_router(task_router)
 
 
-@app.exception_handler(TaskNotFoundException)
+@app.exception_handler(TaskNotFoundError)
 async def task_not_found_handler(
-    request: Request, exc: TaskNotFoundException
+    request: Request, exc: TaskNotFoundError
 ) -> JSONResponse:
-    """Translate ``TaskNotFoundException`` into a 404 HTTP response."""
+    """Translate ``TaskNotFoundError`` into a 404 HTTP response."""
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={"detail": f"Task with id {exc.task_id} not found"},
