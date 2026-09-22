@@ -10,9 +10,11 @@ uses asyncpg for its async sessions.
 import os
 from logging.config import fileConfig
 
-from alembic import context
-from sqlalchemy import create_engine, pool
+from sqlalchemy import create_engine
+from sqlalchemy import pool
 from sqlalchemy.engine import Connection
+
+from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -25,7 +27,7 @@ if config.config_file_name is not None:
 # Dynamically override sqlalchemy.url from the environment variable if available
 database_url = os.getenv("DATABASE_URL")
 if database_url:
-    # Convert async driver (postgresql+asyncpg://) to sync driver (postgresql://) for Alembic
+    # Convert async driver to sync driver for Alembic
     if database_url.startswith("postgresql+asyncpg://"):
         database_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
     elif "+asyncpg" in database_url:
@@ -35,7 +37,6 @@ if database_url:
 # add your model's MetaData object here
 # for 'autogenerate' support — import from the application's Base.
 from app.database import Base  # noqa: E402
-from app.models import Task, User  # noqa: E402  (ensures models are registered)
 
 target_metadata = Base.metadata
 

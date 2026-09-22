@@ -1,21 +1,16 @@
-"""convert_priority_to_enum
+"""Convert priority to enum.
 
 Revision ID: c8e51e8ff3b4
 Revises: d724d27dce0f
 Create Date: 2026-09-17 10:07:28.781055
 
 """
-from typing import Sequence, Union
-
-from alembic import op
-import sqlalchemy as sa
-
 
 # revision identifiers, used by Alembic.
-revision: str = 'c8e51e8ff3b4'
-down_revision: Union[str, Sequence[str], None] = 'd724d27dce0f'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision: str = "c8e51e8ff3b4"
+down_revision: str | list[str] | None = "d724d27dce0f"
+branch_labels: str | list[str] | None = None
+depends_on: str | list[str] | None = None
 
 
 def upgrade() -> None:
