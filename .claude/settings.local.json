@@ -25,7 +25,10 @@
       "Git",
       "Bash(pytest *)",
       "Bash(cd *)",
-      "Bash(powershell -Command \"Get-Content tests\\\\conftest.py\")"
+      "Bash(powershell -Command \"Get-Content tests\\\\conftest.py\")",
+      "Bash(ruff check *)",
+      "Bash(ruff format *)",
+      "Bash(mypy app/)"
     ]
   }
 }

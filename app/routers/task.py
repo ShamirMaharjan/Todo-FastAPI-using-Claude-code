@@ -6,13 +6,18 @@ HTTP responses.  It never imports ``AsyncSession`` or SQLAlchemy query
 primitives, enforcing strict layered separation.
 """
 
-from typing import List, Optional
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import Query
+from fastapi import status
 
-from ..dependencies import get_current_user, get_task_service
+from ..dependencies import get_current_user
+from ..dependencies import get_task_service
 from ..models import User
-from ..schemas import TaskCreate, TaskResponse, TaskUpdate
+from ..schemas import TaskCreate
+from ..schemas import TaskResponse
+from ..schemas import TaskUpdate
 from ..services.task_service import TaskService
 
 router = APIRouter(
@@ -44,14 +49,14 @@ async def create_task(
     return await service.create_task(task, current_user.id)
 
 
-@router.get("/", response_model=List[TaskResponse])
+@router.get("/", response_model=list[TaskResponse])
 async def list_tasks(
-    completed: Optional[bool] = None,
+    completed: bool | None = None,
     limit: int = Query(default=100, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     current_user: User = Depends(get_current_user),
     service: TaskService = Depends(get_task_service),
-) -> List[TaskResponse]:
+) -> list[TaskResponse]:
     """Retrieve a list of task items.
 
     Args:

@@ -4,16 +4,16 @@ import enum
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import (
-    Boolean,
-    DateTime,
-    Enum,
-    ForeignKey,
-    String,
-    Text,
-    text,
-)
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Boolean
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import ForeignKey
+from sqlalchemy import String
+from sqlalchemy import Text
+from sqlalchemy import text
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 from .database import Base
 
@@ -37,9 +37,7 @@ class User(Base):
         String(255), unique=True, index=True, nullable=False
     )
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
-    is_active: Mapped[bool] = mapped_column(
-        Boolean, default=True, nullable=False
-    )
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),  ## text("CURRENT_TIMESTAMP"),
@@ -63,8 +61,8 @@ class Task(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    priority: Mapped[Optional[TaskPriority]] = mapped_column(
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    priority: Mapped[TaskPriority | None] = mapped_column(
         Enum(TaskPriority, native_enum=False, length=50),
         nullable=True,
         default=TaskPriority.MEDIUM,
@@ -75,7 +73,7 @@ class Task(Base):
         server_default=text("CURRENT_TIMESTAMP"),
         nullable=False,
     )
-    user_id: Mapped[Optional[int]] = mapped_column(
+    user_id: Mapped[int | None] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=True,
         index=True,

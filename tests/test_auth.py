@@ -9,21 +9,19 @@ Covers:
 from datetime import timedelta
 
 import pytest
-from fastapi import HTTPException, status
+from fastapi import HTTPException
+from fastapi import status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    create_access_token,
-    decode_access_token,
-    hash_password,
-    verify_password,
-)
+from app.core.security import ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.security import create_access_token
+from app.core.security import decode_access_token
+from app.core.security import hash_password
+from app.core.security import verify_password
 from app.models import User
 from app.repositories.user_repository import UserRepository
 from app.schemas import UserCreate
 from app.services.auth_service import AuthService
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -179,9 +177,7 @@ class TestAuthServiceAuthenticate:
     """Tests for ``AuthService.authenticate_user``."""
 
     @pytest.fixture()
-    async def registered_user(
-        self, auth_service: AuthService
-    ) -> None:
+    async def registered_user(self, auth_service: AuthService) -> None:
         """Register a known user before each authentication test."""
         user_in = UserCreate(email="auth@example.com", password="correctpass123")
         await auth_service.register_user(user_in)
@@ -191,7 +187,9 @@ class TestAuthServiceAuthenticate:
         self, auth_service: AuthService, registered_user: None
     ) -> None:
         """``authenticate_user`` should return the ``User`` on valid credentials."""
-        user = await auth_service.authenticate_user("auth@example.com", "correctpass123")
+        user = await auth_service.authenticate_user(
+            "auth@example.com", "correctpass123"
+        )
         assert isinstance(user, User)
         assert user.email == "auth@example.com"
 

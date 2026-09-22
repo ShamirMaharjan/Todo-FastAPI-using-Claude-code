@@ -209,7 +209,9 @@ class TestTaskPagination:
         assert titles == {"Task 2", "Task 3", "Task 4"}
 
     @pytest.mark.asyncio
-    async def test_list_tasks_pagination_combined(self, auth_client: AsyncClient) -> None:
+    async def test_list_tasks_pagination_combined(
+        self, auth_client: AsyncClient
+    ) -> None:
         """GET /tasks/?limit=N&offset=M should return N tasks starting after M."""
         for i in range(5):
             await auth_client.post("/tasks/", json={"title": f"Task {i}"})
@@ -222,7 +224,9 @@ class TestTaskPagination:
         assert titles == {"Task 1", "Task 2"}
 
     @pytest.mark.asyncio
-    async def test_list_tasks_pagination_default(self, auth_client: AsyncClient) -> None:
+    async def test_list_tasks_pagination_default(
+        self, auth_client: AsyncClient
+    ) -> None:
         """GET /tasks/ with no params should return all tasks (3)."""
         for i in range(3):
             await auth_client.post("/tasks/", json={"title": f"Task {i}"})
@@ -249,8 +253,12 @@ class TestTaskFiltering:
         self, auth_client: AsyncClient
     ) -> None:
         """GET /tasks/?completed=true should return only completed tasks."""
-        await auth_client.post("/tasks/", json={"title": "Done task", "completed": True})
-        await auth_client.post("/tasks/", json={"title": "Pending task", "completed": False})
+        await auth_client.post(
+            "/tasks/", json={"title": "Done task", "completed": True}
+        )
+        await auth_client.post(
+            "/tasks/", json={"title": "Pending task", "completed": False}
+        )
 
         response = await auth_client.get("/tasks/?completed=true")
         assert response.status_code == 200
@@ -264,8 +272,12 @@ class TestTaskFiltering:
         self, auth_client: AsyncClient
     ) -> None:
         """GET /tasks/?completed=false should return only pending tasks."""
-        await auth_client.post("/tasks/", json={"title": "Done task", "completed": True})
-        await auth_client.post("/tasks/", json={"title": "Pending task", "completed": False})
+        await auth_client.post(
+            "/tasks/", json={"title": "Done task", "completed": True}
+        )
+        await auth_client.post(
+            "/tasks/", json={"title": "Pending task", "completed": False}
+        )
 
         response = await auth_client.get("/tasks/?completed=false")
         assert response.status_code == 200
@@ -279,8 +291,12 @@ class TestTaskFiltering:
         self, auth_client: AsyncClient
     ) -> None:
         """GET /tasks/ with no filter should return all tasks."""
-        await auth_client.post("/tasks/", json={"title": "Done task", "completed": True})
-        await auth_client.post("/tasks/", json={"title": "Pending task", "completed": False})
+        await auth_client.post(
+            "/tasks/", json={"title": "Done task", "completed": True}
+        )
+        await auth_client.post(
+            "/tasks/", json={"title": "Pending task", "completed": False}
+        )
 
         response = await auth_client.get("/tasks/")
         assert response.status_code == 200

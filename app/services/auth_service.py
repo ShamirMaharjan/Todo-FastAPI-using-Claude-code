@@ -5,12 +5,15 @@ authenticating existing ones, delegating persistence to
 ``UserRepository`` and password/JWT operations to ``app.core.security``.
 """
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException
+from fastapi import status
 
-from ..core.security import hash_password, verify_password
+from ..core.security import hash_password
+from ..core.security import verify_password
 from ..models import User
 from ..repositories.user_repository import UserRepository
-from ..schemas import UserCreate, UserResponse
+from ..schemas import UserCreate
+from ..schemas import UserResponse
 
 
 class AuthService:

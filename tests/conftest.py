@@ -1,22 +1,21 @@
-﻿"""Pytest configuration and shared fixtures for integration tests.
+"""Pytest configuration and shared fixtures for integration tests.
 
 Uses PostgreSQL (asyncpg) as the test database, matching the production
 configuration.  Tables are created and dropped at session scope; each test
 starts with a clean database via the clean_tables fixture.
 """
 
-import pytest
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from httpx import ASGITransport
+from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
 
 from app.core.config import DATABASE_URL
-from app.database import Base, get_db
+from app.database import Base
+from app.database import get_db
 from app.main import app
 
 

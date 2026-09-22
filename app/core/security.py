@@ -4,17 +4,17 @@ Uses Passlib with bcrypt for password hashing and PyJWT for
 access-token creation and verification.
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
+from typing import Any
 
 import jwt
 from passlib.context import CryptContext
 
-from .config import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    ALGORITHM,
-    SECRET_KEY,
-)
+from .config import ACCESS_TOKEN_EXPIRE_MINUTES
+from .config import ALGORITHM
+from .config import SECRET_KEY
 
 # Passlib password context — bcrypt is the default scheme.
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -46,8 +46,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(
-    data: dict,
-    expires_delta: Optional[timedelta] = None,
+    data: dict[str, Any],
+    expires_delta: timedelta | None = None,
 ) -> str:
     """Encode a JWT access token from the given payload.
 
@@ -60,16 +60,16 @@ def create_access_token(
         The encoded JWT string.
     """
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (
+    expire = datetime.now(UTC) + (
         expires_delta
         if expires_delta is not None
         else timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    to_encode.update({"exp": expire, "iat": datetime.now(timezone.utc)})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    to_encode.update({"exp": expire, "iat": datetime.now(UTC)})
+    return str(jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM))
 
 
-def decode_access_token(token: str) -> Optional[dict]:
+def decode_access_token(token: str) -> dict[str, Any] | None:
     """Decode and validate a JWT access token.
 
     Args:

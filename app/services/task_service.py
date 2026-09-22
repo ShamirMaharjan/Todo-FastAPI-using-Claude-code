@@ -1,10 +1,10 @@
 """Service layer for task business logic."""
 
-from typing import List, Optional
 
-from ..repositories.task_repository import TaskRepository
 from ..models import Task
-from ..schemas import TaskCreate, TaskUpdate
+from ..repositories.task_repository import TaskRepository
+from ..schemas import TaskCreate
+from ..schemas import TaskUpdate
 
 
 class TaskNotFoundException(Exception):
@@ -47,10 +47,10 @@ class TaskService:
     async def list_all(
         self,
         user_id: int,
-        completed: Optional[bool] = None,
+        completed: bool | None = None,
         offset: int = 0,
         limit: int = 100,
-    ) -> List[Task]:
+    ) -> list[Task]:
         """Retrieve all tasks for a user, optionally filtered by completion status.
 
         Args:
@@ -62,7 +62,9 @@ class TaskService:
         Returns:
             A list of tasks owned by *user_id*.
         """
-        return await self.repo.list(user_id, completed=completed, offset=offset, limit=limit)
+        return await self.repo.list(
+            user_id, completed=completed, offset=offset, limit=limit
+        )
 
     async def create_task(self, schema: TaskCreate, user_id: int) -> Task:
         """Create a new task.

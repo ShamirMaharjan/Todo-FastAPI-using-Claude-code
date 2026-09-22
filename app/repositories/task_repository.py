@@ -1,12 +1,12 @@
 """Task repository encapsulating all database access for Task objects."""
 
-from typing import List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import Task
-from ..schemas import TaskCreate, TaskUpdate
+from ..schemas import TaskCreate
+from ..schemas import TaskUpdate
 
 
 class TaskRepository:
@@ -15,7 +15,7 @@ class TaskRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def get_by_id(self, task_id: int, user_id: int) -> Optional[Task]:
+    async def get_by_id(self, task_id: int, user_id: int) -> Task | None:
         """Retrieve a single task by its ID, scoped to the owning user.
 
         Args:
@@ -26,19 +26,17 @@ class TaskRepository:
             The matching ``Task`` if found and owned by *user_id*, else ``None``.
         """
         result = await self.session.execute(
-            select(Task)
-            .where(Task.id == task_id)
-            .where(Task.user_id == user_id)
+            select(Task).where(Task.id == task_id).where(Task.user_id == user_id)
         )
         return result.scalar_one_or_none()
 
     async def list(
         self,
         user_id: int,
-        completed: Optional[bool] = None,
+        completed: bool | None = None,
         offset: int = 0,
         limit: int = 100,
-    ) -> List[Task]:
+    ) -> list[Task]:
         """Retrieve tasks owned by *user_id* with optional completed filter, offset, and limit.
 
         Args:

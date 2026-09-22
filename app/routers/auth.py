@@ -6,12 +6,16 @@ HTTP responses.  It never imports ``AsyncSession`` or SQLAlchemy query
 primitives, enforcing strict layered separation.
 """
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ..core.security import create_access_token
 from ..dependencies import get_auth_service
-from ..schemas import Token, UserCreate, UserResponse
+from ..schemas import Token
+from ..schemas import UserCreate
+from ..schemas import UserResponse
 from ..services.auth_service import AuthService
 
 router = APIRouter(
@@ -56,8 +60,6 @@ async def login(
     Returns:
         A ``Token`` containing the JWT ``access_token`` and ``token_type``.
     """
-    user = await auth_service.authenticate_user(
-        form_data.username, form_data.password
-    )
+    user = await auth_service.authenticate_user(form_data.username, form_data.password)
     access_token = create_access_token(data={"sub": user.email})
     return Token(access_token=access_token, token_type="bearer")

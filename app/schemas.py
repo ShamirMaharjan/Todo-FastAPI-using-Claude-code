@@ -1,9 +1,11 @@
 """Pydantic v2 request and response schemas."""
 
 from datetime import datetime
-from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import EmailStr
+from pydantic import Field
 
 from .models import TaskPriority
 
@@ -42,16 +44,28 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     """Schema for the decoded token payload."""
 
-    email: Optional[str] = None
+    email: str | None = None
 
 
 class TaskBase(BaseModel):
     """Shared fields for task create and update operations."""
 
-    title: str = Field(..., min_length=1, max_length=255, description="The title of the task")
-    description: Optional[str] = Field(None, max_length=2000, description="Optional detailed description")
-    priority: Optional[TaskPriority] = TaskPriority.MEDIUM
-    completed: Optional[bool] = Field(False, description="Whether the task is completed")
+    title: str = Field(
+        ...,
+        min_length=1,
+        max_length=255,
+        description="The title of the task",
+    )
+    description: str | None = Field(
+        None,
+        max_length=2000,
+        description="Optional detailed description",
+    )
+    priority: TaskPriority | None = TaskPriority.MEDIUM
+    completed: bool | None = Field(
+        False,
+        description="Whether the task is completed",
+    )
 
 
 class TaskCreate(TaskBase):
@@ -68,10 +82,10 @@ class TaskUpdate(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    title: Optional[str] = Field(None, min_length=1, max_length=255)
-    description: Optional[str] = Field(None, max_length=2000)
-    priority: Optional[TaskPriority] = None
-    completed: Optional[bool] = None
+    title: str | None = Field(None, min_length=1, max_length=255)
+    description: str | None = Field(None, max_length=2000)
+    priority: TaskPriority | None = None
+    completed: bool | None = None
 
 
 class TaskResponse(TaskBase):
@@ -81,4 +95,4 @@ class TaskResponse(TaskBase):
 
     id: int
     created_at: datetime
-    user_id: Optional[int] = None
+    user_id: int | None = None

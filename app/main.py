@@ -1,13 +1,17 @@
 """FastAPI application entry point."""
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI
+from fastapi import Request
+from fastapi import status
 from fastapi.responses import JSONResponse
 
-from .database import Base, engine
-from .routers import auth_router, task_router
+from .database import Base
+from .database import engine
+from .routers import auth_router
+from .routers import task_router
 from .services.task_service import TaskNotFoundException
 
 

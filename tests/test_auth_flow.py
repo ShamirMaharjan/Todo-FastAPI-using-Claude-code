@@ -11,7 +11,6 @@ import pytest
 import pytest_asyncio
 from httpx import AsyncClient
 
-
 # Helper credentials -----------------------------------------------------------
 USER_A_EMAIL = "usera@example.com"
 USER_A_PASS = "passwordA123"
@@ -19,9 +18,7 @@ USER_B_EMAIL = "userb@example.com"
 USER_B_PASS = "passwordB123"
 
 
-async def _register_and_login(
-    client: AsyncClient, email: str, password: str
-) -> str:
+async def _register_and_login(client: AsyncClient, email: str, password: str) -> str:
     """Register a user then log in, returning the bearer access token."""
     await client.post(
         "/auth/register",
@@ -101,9 +98,7 @@ class TestAuthFlow:
         assert response.status_code == 401
 
     @pytest.mark.asyncio
-    async def test_protected_endpoint_without_token(
-        self, client: AsyncClient
-    ) -> None:
+    async def test_protected_endpoint_without_token(self, client: AsyncClient) -> None:
         """Accessing /tasks without a token should return 401."""
         response = await client.get("/tasks/")
         assert response.status_code == 401
