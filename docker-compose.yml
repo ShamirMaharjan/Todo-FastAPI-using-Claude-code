@@ -11,6 +11,24 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d todo_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: todo_app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://app_user:app_password@postgres:5432/todo_db
+      - SECRET_KEY=dev_secret_key_change_in_prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ./entrypoint.sh
 
 volumes:
   postgres_data:
