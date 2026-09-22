@@ -6,5 +6,10 @@ openrouter_keys.txt
 
 proxy.py
 
+.env
+
+alembic.ini
+alembic/
+
 
 
