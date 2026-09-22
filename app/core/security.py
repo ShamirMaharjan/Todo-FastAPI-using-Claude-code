@@ -4,13 +4,17 @@ Uses Passlib with bcrypt for password hashing and PyJWT for
 access-token creation and verification.
 """
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC
+from datetime import datetime
+from datetime import timedelta
 from typing import Any
 
 import jwt
 from passlib.context import CryptContext
 
-from .config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
+from .config import ACCESS_TOKEN_EXPIRE_MINUTES
+from .config import ALGORITHM
+from .config import SECRET_KEY
 
 # Passlib password context — bcrypt is the default scheme.
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
