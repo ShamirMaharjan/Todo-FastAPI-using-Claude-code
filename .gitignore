@@ -8,10 +8,6 @@ proxy.py
 
 .env
 
-alembic.ini
-alembic/
-
-entrypoint.sh
 
 
 
