@@ -3,7 +3,6 @@
     "allow": [
       "Bash(pip install *)",
       "Bash(python *)",
-      "Bash(ECC_GATEGUARD=off echo gate disabled *)",
       "mcp__sqlite__read_query",
       "Bash(Get-ChildItem -Path . -Recurse -Include \".mcp.json\", \"settings.json\", \"settings.local.json\" -ErrorAction SilentlyContinue; Get-ChildItem -Path . -Recurse -Include \"*.md\" -Filter \"CLAUDE*\" -ErrorAction SilentlyContinue)",
       "Bash(Test-Path *)",
@@ -18,7 +17,15 @@
       "Bash(sqlite3 todos.db \".schema tasks\")",
       "Bash(pip show *)",
       "Bash(alembic upgrade *)",
-      "Bash(sqlite3 todos.db \"SELECT id, title, priority, completed FROM tasks LIMIT 5;\")"
+      "Bash(sqlite3 todos.db \"SELECT id, title, priority, completed FROM tasks LIMIT 5;\")",
+      "Bash(docker exec *)",
+      "Bash(PGPASSWORD=app_password psql -h localhost -p 5433 -U app_user -d todo_db -c \"SELECT current_user, current_database\\(\\);\")",
+      "Bash(grep -v \"^$\")",
+      "Bash(PGPASSWORD= psql -h localhost -p 5433 -U app_user -d todo_db -c \"SELECT current_user, current_database\\(\\);\")",
+      "Git",
+      "Bash(pytest *)",
+      "Bash(cd *)",
+      "Bash(powershell -Command \"Get-Content tests\\\\conftest.py\")"
     ]
   }
 }

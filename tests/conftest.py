@@ -1,6 +1,9 @@
-"""Pytest configuration and shared fixtures for integration tests."""
+﻿"""Pytest configuration and shared fixtures for integration tests.
 
-import asyncio
+Uses PostgreSQL (asyncpg) as the test database, matching the production
+configuration.  Tables are created and dropped at session scope; each test
+starts with a clean database via the clean_tables fixture.
+"""
 
 import pytest
 import pytest_asyncio
@@ -10,36 +13,31 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.pool import StaticPool
+from sqlalchemy.pool import NullPool
 
+from app.core.config import DATABASE_URL
 from app.database import Base, get_db
 from app.main import app
 
-test_engine = create_async_engine(
-    "sqlite+aiosqlite://",
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-    echo=False,
-)
 
-TestSessionLocal = async_sessionmaker(
-    bind=test_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create a single event loop for the entire test session."""
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
+@pytest_asyncio.fixture(scope="session")
+async def test_engine():
+    """Create the async test engine with NullPool to avoid cross-event-loop
+    connection issues. NullPool creates connections on-demand, so they are
+    always bound to the current event loop rather than a stale one.
+    """
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=False,
+        poolclass=NullPool,
+    )
+    yield engine
+    await engine.dispose()
 
 
 @pytest_asyncio.fixture(scope="session")
-async def db_engine():
-    """Create all tables in the in-memory test database once for the session."""
+async def db_engine(test_engine):
+    """Create all tables in the test database once for the session."""
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield test_engine
@@ -55,21 +53,20 @@ async def db_session(db_engine) -> AsyncSession:
     Rolls back any uncommitted changes after the test so each test
     starts with a pristine database.
     """
-    async with TestSessionLocal() as session:
+    session_maker = async_sessionmaker(
+        bind=db_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+    async with session_maker() as session:
         yield session
         await session.rollback()
 
 
 @pytest_asyncio.fixture(autouse=True)
 async def clean_tables(db_engine):
-    """Truncate all tables before each test for full isolation.
-
-    Works alongside ``db_session``: because the in-memory SQLite database
-    uses a shared ``StaticPool``, committed rows from one test would
-    otherwise be visible to subsequent tests. This fixture clears every
-    table before each test runs.
-    """
-    async with test_engine.begin() as conn:
+    """Truncate all tables before each test for full isolation."""
+    async with db_engine.begin() as conn:
         for table in reversed(Base.metadata.sorted_tables):
             await conn.execute(table.delete())
     yield
@@ -77,12 +74,7 @@ async def clean_tables(db_engine):
 
 @pytest_asyncio.fixture()
 async def client(db_session) -> AsyncClient:
-    """Provide an async test client with the DB dependency overridden.
-
-    The ``get_db`` dependency is replaced with one that yields the
-    per-test ``db_session`` fixture, ensuring tests use the isolated
-    in-memory database.
-    """
+    """Provide an async test client with the DB dependency overridden."""
     app.dependency_overrides[get_db] = lambda: db_session
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://testserver"
@@ -93,12 +85,7 @@ async def client(db_session) -> AsyncClient:
 
 @pytest_asyncio.fixture()
 async def auth_token(client: AsyncClient) -> str:
-    """Register and log in a test user, returning the JWT access token.
-
-    Depends on the ``client`` fixture so the same database session is
-    shared.  The token is fresh per test because ``clean_tables``
-    truncates the users table beforehand.
-    """
+    """Register and log in a test user, returning the JWT access token."""
     await client.post(
         "/auth/register",
         json={"email": "test@example.com", "password": "testpassword123"},
@@ -113,7 +100,7 @@ async def auth_token(client: AsyncClient) -> str:
 
 @pytest_asyncio.fixture()
 async def auth_headers(client: AsyncClient, auth_token: str) -> dict[str, str]:
-    """Return ``Authorization`` header dict for the authenticated test user."""
+    """Return Authorization header dict for the authenticated test user."""
     return {"Authorization": f"Bearer {auth_token}"}
 
 

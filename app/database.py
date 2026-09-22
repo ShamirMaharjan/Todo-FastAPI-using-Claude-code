@@ -1,4 +1,4 @@
-"""Async SQLite database connection and session management."""
+"""Async PostgreSQL database connection and session management."""
 
 from typing import AsyncGenerator
 
@@ -10,11 +10,11 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import NullPool
 
-# SQLite async database URL format for aiosqlite driver
-DATABASE_URL = "sqlite+aiosqlite:///./todos.db"
+from .core.config import DATABASE_URL
 
-# Create async engine; NullPool disables connection pooling which is
-# recommended for SQLite to avoid "database is locked" errors
+# Create async engine for PostgreSQL using the asyncpg driver.
+# NullPool is used to avoid "database is locked" errors and to ensure
+# clean connection handling with asyncpg.
 engine = create_async_engine(
     DATABASE_URL,
     echo=False,

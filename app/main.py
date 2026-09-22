@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title="FastAPI Todo",
-    description="A simple Todo API built with FastAPI, async SQLAlchemy, and SQLite.",
+    description="A simple Todo API built with FastAPI, async SQLAlchemy, and PostgreSQL.",
     version="0.1.0",
     lifespan=lifespan,
 )
